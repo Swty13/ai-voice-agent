@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+jinja2
+python-dotenv
+sqlalchemy
+pipecat-ai[silero,kokoro,whisper]
+faster-whisper
+twilio
+apscheduler
+pytz
+python-multipart

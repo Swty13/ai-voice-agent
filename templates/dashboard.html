@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Dashboard</h1>
+
+<div class="grid grid-cols-3 gap-6 mb-8">
+  <div class="bg-white rounded-lg shadow p-6 text-center">
+    <div class="text-4xl font-bold text-indigo-600">{{ total_patients }}</div>
+    <div class="text-gray-500 mt-1">Active Patients</div>
+  </div>
+  <div class="bg-white rounded-lg shadow p-6 text-center">
+    <div class="text-4xl font-bold text-blue-600">{{ calls_today }}</div>
+    <div class="text-gray-500 mt-1">Calls Today</div>
+  </div>
+  <div class="bg-white rounded-lg shadow p-6 text-center">
+    <div class="text-4xl font-bold text-green-600">{{ compliance_rate }}%</div>
+    <div class="text-gray-500 mt-1">Compliance Rate</div>
+  </div>
+</div>
+
+<div class="bg-white rounded-lg shadow">
+  <div class="px-6 py-4 border-b font-semibold">Recent Calls</div>
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+      <tr>
+        <th class="px-6 py-3 text-left">Patient</th>
+        <th class="px-6 py-3 text-left">Time</th>
+        <th class="px-6 py-3 text-left">Outcome</th>
+        <th class="px-6 py-3 text-left">Transcript</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y">
+      {% for log in recent_calls %}
+      <tr>
+        <td class="px-6 py-3">{{ log.patient.name }}</td>
+        <td class="px-6 py-3 text-gray-500">{{ log.called_at.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td class="px-6 py-3">
+          {% if log.outcome == 'took_it' %}
+            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">Took it</span>
+          {% elif log.outcome == 'not_yet' %}
+            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-medium">Not yet</span>
+          {% elif log.outcome == 'needs_help' %}
+            <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs font-medium">Needs help</span>
+          {% elif log.outcome == 'no_answer' %}
+            <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-medium">No answer</span>
+          {% else %}
+            <span class="text-gray-400">—</span>
+          {% endif %}
+        </td>
+        <td class="px-6 py-3 text-gray-500 max-w-xs truncate">
+          {{ (log.transcript or '')[:80] }}{% if log.transcript and log.transcript|length > 80 %}…{% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" class="px-6 py-6 text-center text-gray-400">No calls yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

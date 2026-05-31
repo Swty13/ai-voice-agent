@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Patients</h1>
+
+<div class="bg-white rounded-lg shadow mb-8">
+  <div class="px-6 py-4 border-b font-semibold">Patient List</div>
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
+      <tr>
+        <th class="px-6 py-3 text-left">Name</th>
+        <th class="px-6 py-3 text-left">Phone</th>
+        <th class="px-6 py-3 text-left">Timezone</th>
+        <th class="px-6 py-3 text-left">Call Time</th>
+        <th class="px-6 py-3 text-left">Medication</th>
+        <th class="px-6 py-3 text-left">Last Outcome</th>
+        <th class="px-6 py-3 text-left">Action</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y">
+      {% for item in patient_data %}
+      {% set p = item.patient %}
+      {% set log = item.last_log %}
+      <tr>
+        <td class="px-6 py-3 font-medium">
+          {% if 'Amsterdam' in p.timezone or 'Europe' in p.timezone %}🇳🇱
+          {% elif 'Auckland' in p.timezone or 'Pacific' in p.timezone %}🇳🇿
+          {% elif 'Australia' in p.timezone %}🇦🇺
+          {% else %}🌍{% endif %}
+          {{ p.name }}
+        </td>
+        <td class="px-6 py-3 text-gray-500">{{ p.phone }}</td>
+        <td class="px-6 py-3 text-gray-500">{{ p.timezone }}</td>
+        <td class="px-6 py-3">{{ p.call_time }}</td>
+        <td class="px-6 py-3">{{ p.medication_name }} {{ p.dosage }}</td>
+        <td class="px-6 py-3">
+          {% if log and log.outcome %}
+            {% if log.outcome.value == 'took_it' %}
+              <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">Took it</span>
+            {% elif log.outcome.value == 'not_yet' %}
+              <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs font-medium">Not yet</span>
+            {% elif log.outcome.value == 'needs_help' %}
+              <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs font-medium">Needs help</span>
+            {% elif log.outcome.value == 'no_answer' %}
+              <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs font-medium">No answer</span>
+            {% endif %}
+          {% else %}
+            <span class="text-gray-400">—</span>
+          {% endif %}
+        </td>
+        <td class="px-6 py-3">
+          <form method="post" action="/call/{{ p.id }}">
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-1 rounded">
+              Trigger Test Call
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="px-6 py-6 text-center text-gray-400">No patients yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="bg-white rounded-lg shadow">
+  <div class="px-6 py-4 border-b font-semibold">Add Patient</div>
+  <form method="post" action="/patients" class="px-6 py-4 grid grid-cols-2 gap-4">
+    <div>
+      <label class="block text-xs font-medium text-gray-700 mb-1">Full Name</label>
+      <input name="name" required class="w-full border rounded px-3 py-2 text-sm" placeholder="Margaret van der Berg" />
+    </div>
+    <div>
+      <label class="block text-xs font-medium text-gray-700 mb-1">Phone (E.164)</label>
+      <input name="phone" required class="w-full border rounded px-3 py-2 text-sm" placeholder="+31612345678" />
+    </div>
+    <div>
+      <label class="block text-xs font-medium text-gray-700 mb-1">Timezone</label>
+      <input name="timezone" class="w-full border rounded px-3 py-2 text-sm" value="UTC" />
+    </div>
+    <div>
+      <label class="block text-xs font-medium text-gray-700 mb-1">Call Time (HH:MM)</label>
+      <input name="call_time" class="w-full border rounded px-3 py-2 text-sm" value="09:00" />
+    </div>
+    <div>
+      <label class="block text-xs font-medium text-gray-700 mb-1">Medication Name</label>
+      <input name="medication_name" required class="w-full border rounded px-3 py-2 text-sm" placeholder="Metformin" />
+    </div>
+    <div>
+      <label class="block text-xs font-medium text-gray-700 mb-1">Dosage</label>
+      <input name="dosage" required class="w-full border rounded px-3 py-2 text-sm" placeholder="500mg" />
+    </div>
+    <div>
+      <label class="block text-xs font-medium text-gray-700 mb-1">Caregiver Name</label>
+      <input name="caregiver_name" class="w-full border rounded px-3 py-2 text-sm" />
+    </div>
+    <div>
+      <label class="block text-xs font-medium text-gray-700 mb-1">Caregiver Phone</label>
+      <input name="caregiver_phone" class="w-full border rounded px-3 py-2 text-sm" placeholder="+31687654321" />
+    </div>
+    <div class="col-span-2">
+      <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded text-sm font-medium">
+        Add Patient
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

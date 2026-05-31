@@ -166,7 +166,7 @@ Use the web form at `/patients`. Required fields:
 | Field | Example | Notes |
 |-------|---------|-------|
 | Name | Margaret van der Berg | Used in the personalised greeting |
-| Phone | +919718361022 | E.164 format |
+| Phone | +1XXXXXXXXX | E.164 format |
 | Timezone | Asia/Kolkata | IANA timezone string |
 | Call Time | 09:00 | HH:MM in the patient's local timezone |
 | Medication | Metformin | Spoken aloud in the reminder |
